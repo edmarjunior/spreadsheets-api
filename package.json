@@ -2,11 +2,12 @@
   "name": "node-structure",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/edmarjunior/auth-api.git",
+  "repository": "https://github.com/edmarjunior/projects-api",
   "author": "Edmar Junior <edmarjunior17@gmail.com>",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "build": "sucrase ./src -d ./dist --transforms imports",
     "pretest": "set NODE_ENV=test&&sequelize db:migrate",
     "test": "jest --forceExit",
     "posttest": "set NODE_ENV=test&&sequelize db:migrate:undo:all"
