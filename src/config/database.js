@@ -10,7 +10,7 @@ module.exports = {
 	storage: './__tests__/database.sqlite',
 	logging: false,
 	define: {
-		timestamps: false, // 'true' obrigará a criar as colunas 'created_at' e 'updated_at' nas migrations
+		timestamps: true, // 'true' obrigará a criar as colunas 'created_at' e 'updated_at' nas migrations
 		underscored: true,
 		underscoredAll: true,
 	},

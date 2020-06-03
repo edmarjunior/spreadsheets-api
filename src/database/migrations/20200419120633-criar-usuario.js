@@ -34,7 +34,15 @@ module.exports = {
 			data_reenvio_senha: {
 				type: Sequelize.DATE,
 				allowNull: true,
-			}
+			},
+			created_at: {
+				type: Sequelize.DATE,
+				allowNull: false,
+			},
+			updated_at: {
+				type: Sequelize.DATE,
+				allowNull: false,
+			},
 		});
 	},
 

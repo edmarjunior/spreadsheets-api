@@ -6,6 +6,11 @@ import ContaUsuarioController from './app/controllers/ContaUsuarioController';
 import LoginController from './app/controllers/LoginController';
 import ReenvioAtivacaoContaController from './app/controllers/ReenvioAtivacaoContaController';
 import RecuperarSenhaController from './app/controllers/RecuperarSenhaController';
+import UsuarioController from './app/controllers/UsuarioController';
+import TimeController from './app/controllers/TimeController';
+import ApontamentoAnalistaController from './app/controllers/ApontamentoAnalistaController';
+import ApontamentoTimeController from './app/controllers/ApontamentoTimeController';
+import ApontamentosPlanilhaController from './app/controllers/ApontamentosPlanilhaController';
 
 // validators
 import LoginStoreValidate from './app/validators/LoginStoreValidate';
@@ -31,6 +36,21 @@ routes.post('/reenvio-ativacao-conta', ReenvioEmailAtivacaoContaValidate, Reenvi
 // recuperar senha
 routes.post('/recuperar-senha', RecuperarSenhaStoreValidate, RecuperarSenhaController.store);
 
+
+// times
+routes.get('/times', TimeController.index);
+
+// apontamentos analistas
+routes.get('/apontamentos-analistas', ApontamentoAnalistaController.index);
+
+// apontamentos times
+routes.get('/apontamentos-times', ApontamentoTimeController.index);
+
+// apontamentos planilha
+routes.get('/apontamentos-planilha', ApontamentosPlanilhaController.index);
+routes.get('/apontamentos-planilha-sincronizar', ApontamentosPlanilhaController.store);
+
+
 /**
  * ativando autenticação nas rotas abaixo
  */
@@ -41,5 +61,10 @@ routes.put('/contas/:id/ativar', ContaUsuarioController.update);
 
 // nova senha
 routes.put('/nova-senha', RecuperarSenhaUpdateValidate, RecuperarSenhaController.update);
+
+// usuarios
+routes.get('/usuarios', UsuarioController.index);
+
+
 
 export default routes;

@@ -35,6 +35,10 @@ class Usuario extends Model {
 		return this;
 	}
 
+	static associate(models) {
+		this.belongsTo(models.Time, { foreignKey: 'id_time', as: 'time' });
+	}
+
 	checkSenha(senha) {
 		return bcrypt.compare(senha, this.senha_hash);
 	}
