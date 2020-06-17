@@ -65,6 +65,4 @@ routes.put('/nova-senha', RecuperarSenhaUpdateValidate, RecuperarSenhaController
 // usuarios
 routes.get('/usuarios', UsuarioController.index);
 
-
-
 export default routes;

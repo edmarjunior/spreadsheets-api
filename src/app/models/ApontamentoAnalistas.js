@@ -12,7 +12,7 @@ class ApontamentoAnalistas extends Model {
 	}
 
 	static associate(models) {
-		this.belongsTo(models.Apontamento, { foreignKey: 'id_apontamento', as: 'apontamento' });
+		this.belongsTo(models.Apontamento, { foreignKey: 'id_apontamento', as: 'apontamento', onDelete: 'cascade' });
 		this.belongsTo(models.Usuario, { foreignKey: 'id_analista', as: 'analista' });
 	}
 }

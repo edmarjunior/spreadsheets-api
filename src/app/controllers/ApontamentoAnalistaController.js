@@ -6,17 +6,21 @@ import { compare, convertToHour, sum } from '../../lib/Helper';
 
 class ApontamentoAnalistaController {
     async index(req, res) {
-        let { order_property, order_direction } = req.query;
+        const { 
+            order_property = 'horas_aprovadas', 
+            order_direction = 'desc', 
+            mes,
+            ano 
+        } = req.query;
         
-        order_property = order_property || 'horas_aprovadas';
-        order_direction = order_direction || 'desc';
-
         const apontamentos = await ApontamentoAnalistas.findAll({
             include: [
                 {
+                    required: true,
                     model: Apontamento,
                     as: 'apontamento',
-                    attributes: ['id', 'indicador_aprovacao']
+                    attributes: ['id', 'indicador_aprovacao'],
+                    where: { mes, ano }
                 },
                 {
                     model: Usuario,
@@ -31,7 +35,7 @@ class ApontamentoAnalistaController {
                     ]
                 },
                 
-            ]
+            ],
         });
 
         let analistas = [];

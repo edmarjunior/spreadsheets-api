@@ -17,6 +17,9 @@ class Apontamento extends Model {
 				indicador_aprovacao: Sequelize.STRING,
 				anotacao: Sequelize.STRING,
 				nota: Sequelize.STRING,
+				mes: Sequelize.INTEGER,
+				ano: Sequelize.INTEGER,
+
 			},
 			{ sequelize }
 		);

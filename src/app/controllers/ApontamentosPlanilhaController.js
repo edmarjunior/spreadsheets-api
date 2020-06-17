@@ -1,31 +1,105 @@
 import Tabletop from "tabletop";
 import Apontamento from "../models/Apontamento";
 import ApontamentoAnalistas from "../models/ApontamentoAnalistas";
+const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
 
 class ApontamentosPlanilhaController {
     async index(req, res) {
+        const { mes, ano } = req.query;
+
+        if (!mes || !ano) {
+            return res.status(400).json({ error: "Não foi enviado o mes/ano dos apontamentos" })
+        }
+        
+
         Tabletop.init({
             key: process.env.APONTAMENTOS_KEY,
-            callback: (googleData) => {
-                const apontamentos = ApontamentosPlanilhaController.readGoogleData(googleData);
-                return res.json(apontamentos);
+            callback: (dataIgnore, googleData) => {
+                const mesAno = `${meses[+mes - 1]}/${ano}`;
+                const data = {
+                    elements: googleData.models[mesAno].elements,
+                    mes,
+                    ano
+                };
+
+                const ultima_linha_lida = data.elements.length + 1;
+                const apontamentos = ApontamentosPlanilhaController.readGoogleData(data);
+               
+                return res.json({
+                    ultima_linha_lida,
+                    apontamentos
+                });
             },
             simpleSheet: true
         })
     }
 
     async store(req, res) {
-        await ApontamentoAnalistas.destroy({ where: {} });
-        await Apontamento.destroy({ where: {} });
+        const { mes, ano } = req.query;
+
+        if (!mes || !ano) {
+            return res.status(400).json({ error: "Não foi enviado o mes/ano dos apontamentos" })
+        }
 
         Tabletop.init({
             key: process.env.APONTAMENTOS_KEY,
-            callback: async googleData  =>  {
-                const apontamentos = ApontamentosPlanilhaController.readGoogleData(googleData);
+            callback: async (dataIgnore, googleData)  =>  {
+                const mesAno = `${meses[+mes - 1]}/${ano}`;
+                const data = {
+                    elements: googleData.models[mesAno].elements,
+                    mes,
+                    ano
+                };
+
+                const ultima_linha_lida = data.elements.length + 1;
+                const apontamentos = ApontamentosPlanilhaController.readGoogleData(data);
                 
+                if (!apontamentos) {
+                   return res.status(400).json({ error: 'Nenhum apontamento para ser sincronizado'}) 
+                }
+
+                const apontamentosAnalistasDb = await ApontamentoAnalistas.findAll({
+                    include: [
+                        {
+                            required: true,
+                            model: Apontamento,
+                            as: 'apontamento',
+                            attributes: ['id', 'mes', 'ano'],
+                            where: { mes, ano }
+                        }
+                    ]
+                })
+
+                const idsApontamentos = apontamentosAnalistasDb.map(x => x.apontamento.id);
+                let idsApontamentosDistintos = [];
+                
+                idsApontamentos.forEach((i) => {
+                    if (idsApontamentosDistintos.indexOf(i) < 0) {
+                        idsApontamentosDistintos.push(i);
+                    }
+                })
+
+                await ApontamentoAnalistas.destroy({
+                    where: {
+                        id_apontamento: idsApontamentos
+                    }
+                });
+                
+                await Apontamento.destroy({ 
+                    where: { 
+                        mes: +mes, 
+                        ano: +ano,
+                    } 
+                });
+
                 await Apontamento.bulkCreate(apontamentos);
 
-                const apontamentosDb = await Apontamento.findAll();
+                const apontamentosDb = await Apontamento.findAll({
+                    where: { 
+                        mes: +mes, 
+                        ano: +ano,
+                    } 
+                });
 
                 let apontamentosAnalistas = [];
 
@@ -151,17 +225,21 @@ class ApontamentosPlanilhaController {
 
                 await ApontamentoAnalistas.bulkCreate(apontamentosAnalistas);
 
-                return res.json(apontamentos);
+                return res.json({
+                    ultima_linha_lida,
+                    qtd_apontamentos_antes: idsApontamentosDistintos.length,
+                    qtd_apontamentos_atual: apontamentos.length
+                });
             },
             simpleSheet: true
         });
     }
 
-    static readGoogleData = (googleData) => {
+    static readGoogleData = (data) => {
         const dataAtual = new Date();
         let apontamentos = [];
 
-        googleData.forEach(row => {
+        data.elements.forEach(row => {
             const nomeAnalista = row['Analista'].trim().toLowerCase();
             
             if (!nomeAnalista) {
@@ -181,7 +259,9 @@ class ApontamentosPlanilhaController {
                 minutos_apontados: +row['Tempo gasto (Minutos)'],
                 indicador_aprovacao: row['Aprovado? (S/N) [Wagner]'],
                 anotacao: row['Anotação'],
-                nota: row['Nota']
+                nota: row['Nota'],
+                mes: +data.mes,
+                ano: +data.ano,
             });
         });
 
