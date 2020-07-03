@@ -36,6 +36,8 @@ routes.post('/reenvio-ativacao-conta', ReenvioEmailAtivacaoContaValidate, Reenvi
 // recuperar senha
 routes.post('/recuperar-senha', RecuperarSenhaStoreValidate, RecuperarSenhaController.store);
 
+// usuarios
+routes.get('/usuarios', UsuarioController.index);
 
 // times
 routes.get('/times', TimeController.index);
@@ -50,7 +52,6 @@ routes.get('/apontamentos-times', ApontamentoTimeController.index);
 routes.get('/apontamentos-planilha', ApontamentosPlanilhaController.index);
 routes.get('/apontamentos-planilha-sincronizar', ApontamentosPlanilhaController.store);
 
-
 /**
  * ativando autenticação nas rotas abaixo
  */
@@ -62,7 +63,6 @@ routes.put('/contas/:id/ativar', ContaUsuarioController.update);
 // nova senha
 routes.put('/nova-senha', RecuperarSenhaUpdateValidate, RecuperarSenhaController.update);
 
-// usuarios
-routes.get('/usuarios', UsuarioController.index);
+
 
 export default routes;
