@@ -58,6 +58,11 @@ class ApontamentoTimeController {
 
             let minutosApontados = a.minutos_apontados;
             let indicadorAprovacao = a.apontamento.indicador_aprovacao;
+
+            if (indicadorAprovacao) {
+                indicadorAprovacao = indicadorAprovacao.toUpperCase();
+            }
+
             let aprovado = indicadorAprovacao  === 'S';
 
             time.minutos_apontados += minutosApontados;

@@ -59,6 +59,11 @@ class ApontamentoAnalistaController {
 
             let minutosApontados = a.minutos_apontados;
             let indicadorAprovacao = a.apontamento.indicador_aprovacao;
+           
+            if (indicadorAprovacao) {
+                indicadorAprovacao = indicadorAprovacao.toUpperCase();
+            }
+
             let aprovado = indicadorAprovacao  === 'S';
 
             analista.minutos_apontados += minutosApontados;
