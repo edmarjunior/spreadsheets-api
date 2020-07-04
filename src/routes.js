@@ -11,6 +11,7 @@ import TimeController from './app/controllers/TimeController';
 import ApontamentoAnalistaController from './app/controllers/ApontamentoAnalistaController';
 import ApontamentoTimeController from './app/controllers/ApontamentoTimeController';
 import ApontamentosPlanilhaController from './app/controllers/ApontamentosPlanilhaController';
+import ApontamentoController from './app/controllers/ApontamentoController';
 
 // validators
 import LoginStoreValidate from './app/validators/LoginStoreValidate';
@@ -41,6 +42,9 @@ routes.get('/usuarios', UsuarioController.index);
 
 // times
 routes.get('/times', TimeController.index);
+
+// apontamentos
+routes.get('/apontamentos', ApontamentoController.index);
 
 // apontamentos analistas
 routes.get('/apontamentos-analistas', ApontamentoAnalistaController.index);
