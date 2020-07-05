@@ -12,6 +12,7 @@ import ApontamentoAnalistaController from './app/controllers/ApontamentoAnalista
 import ApontamentoTimeController from './app/controllers/ApontamentoTimeController';
 import ApontamentosPlanilhaController from './app/controllers/ApontamentosPlanilhaController';
 import ApontamentoController from './app/controllers/ApontamentoController';
+import ApontamentoPeriodosController from './app/controllers/ApontamentoPeriodosController';
 
 // validators
 import LoginStoreValidate from './app/validators/LoginStoreValidate';
@@ -55,6 +56,9 @@ routes.get('/apontamentos-times', ApontamentoTimeController.index);
 // apontamentos planilha
 routes.get('/apontamentos-planilha', ApontamentosPlanilhaController.index);
 routes.get('/apontamentos-planilha-sincronizar', ApontamentosPlanilhaController.store);
+
+// apontamento periodos
+routes.get('/apontamento-periodos', ApontamentoPeriodosController.index);
 
 /**
  * ativando autenticação nas rotas abaixo
