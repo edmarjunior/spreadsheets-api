@@ -1,7 +1,7 @@
 import Tabletop from "tabletop";
 import Apontamento from "../models/Apontamento";
 import ApontamentoAnalistas from "../models/ApontamentoAnalistas";
-const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho"];
+const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 class ApontamentosPlanilhaController {
     async index(req, res) {
@@ -56,6 +56,15 @@ class ApontamentosPlanilhaController {
                 
                 if (!apontamentos) {
                    return res.status(400).json({ error: 'Nenhum apontamento para ser sincronizado'}) 
+                }
+
+                const apontamentosErros = apontamentos.filter(apontamento => apontamento.error);
+
+                if (apontamentosErros.length) {
+                    const messages = apontamentosErros
+                        .map(apontamento => `Linha ${apontamento.linha}: ${apontamento.messages.join(', ')}`)
+
+                    return res.status(400).json({ messages });
                 }
 
                 const apontamentosAnalistasDb = await ApontamentoAnalistas.findAll({
@@ -239,21 +248,80 @@ class ApontamentosPlanilhaController {
         const dataAtual = new Date();
         let apontamentos = [];
 
+        let linha = 1;
+
         data.elements.forEach(row => {
+            linha++;
+            row.messages = [];
+            
             const nomeAnalista = row['Analista'].trim().toLowerCase();
             
             if (!nomeAnalista) {
                 return;
             }
 
+            if (!row['Data da Solicitação']) {
+                row.error = true;
+                row.messages.push('Data da Solicitação não preenchida');
+            }
+            
+            let dataSolicitacao;
+
+            if (!!row['Data da Solicitação']) {
+                const [ dia, mes, ano ] = row['Data da Solicitação'].split('/');
+
+                if (!dia || !mes || !ano) {
+                    row.error = true;
+                    row.messages.push('Data da Solicitação no formato incorreto');
+                }
+
+                dataSolicitacao = new Date(+ano, +mes -1, +dia);
+            }
+
+            if (!row['Início']) {
+                row.error = true;
+                row.messages.push('Data de Início não preenchida');
+            }
+
+            let dataInicio;
+
+            if (!!row['Início']) {
+                const [ dia, mes, ano ] = row['Início'].split('/');
+
+                if (!dia || !mes || !ano) {
+                    row.error = true;
+                    row.messages.push('Data de Início no formato incorreto');
+                }
+
+                dataInicio = new Date(+ano, +mes -1, +dia);
+            }
+
+            if (!row['Término']) {
+                row.error = true;
+                row.messages.push('Data de Término não preenchida');
+            }
+
+            let dataTermino;
+
+            if (!!row['Término']) {
+                const [ dia, mes, ano ] = row['Término'].split('/');
+               
+                if (!dia || !mes || !ano) {
+                    row.error = true;
+                    row.messages.push('Data de Término no formato incorreto');
+                }
+
+                dataTermino = new Date(+ano, +mes -1, +dia);
+            }
+
             apontamentos.push({
-                data_solicitacao: dataAtual, //row['Data da Solicitação'],
+                data_solicitacao: dataSolicitacao,
                 range_analistas: row['Analista'],
                 tipo_tendimento: row['Tipo de Atendimento'],
                 solicitante: row['Solicitante'],
                 area: row['Área'],
-                inicio: dataAtual, //row['Início'],
-                termino: dataAtual, //row['Término'],
+                inicio: dataInicio,
+                termino: dataTermino,
                 assunto: row['Assunto'],
                 descricao: row['Descrição da solução'],
                 minutos_apontados: +row['Tempo gasto (Minutos)'],
@@ -262,6 +330,9 @@ class ApontamentosPlanilhaController {
                 nota: row['Nota'],
                 mes: +data.mes,
                 ano: +data.ano,
+                linha,
+                error: row.error,
+                messages: row.messages,
             });
         });
 
