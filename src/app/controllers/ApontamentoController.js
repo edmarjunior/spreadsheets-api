@@ -68,6 +68,7 @@ class ApontamentoControler {
 
             apontamentosDistinct.push({
                 ...apontamento.dataValues,
+                indicador_aprovacao,
                 data_solicitacao: format(apontamento.data_solicitacao, 'dd/MM/yyyy'),
                 inicio: format(apontamento.inicio, 'dd/MM/yyyy'),
                 termino: format(apontamento.termino, 'dd/MM/yyyy'),
