@@ -9,24 +9,27 @@ class ApontamentoPeriodosController {
         Tabletop.init({
             key: process.env.APONTAMENTOS_KEY,
             callback: (dataIgnore, googleData) => {
-
                 let periodos = [];
-                let id = 1000;
 
                 for (let prop in dataIgnore) {
                     const [mes, ano] = prop.split('/');
                     
                     periodos.push({
-                        id,
                         nome: prop,
                         mes: convertToNumericMonth(mes),
                         ano: +ano
                     });
-
-                    id--;
                 }
 
-                return res.json(periodos);
+                let id = 1000;
+
+                return res.json(periodos
+                    .sort((a, b) => a.ano > b.ano ? -1 : 1)
+                    .sort((a, b) => a.mes > b.mes ? -1 : 1)
+                    .map(periodo => ({
+                        ...periodo,
+                        id: id--,
+                    })));
             }
         });
     }
