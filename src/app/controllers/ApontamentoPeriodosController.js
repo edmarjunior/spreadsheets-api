@@ -11,16 +11,19 @@ class ApontamentoPeriodosController {
             callback: (dataIgnore, googleData) => {
 
                 let periodos = [];
-                let id = 0;
+                let id = 1000;
+
                 for (let prop in dataIgnore) {
-                    id++;
-                    const [mes, ano] = prop.split('/')
+                    const [mes, ano] = prop.split('/');
+                    
                     periodos.push({
                         id,
                         nome: prop,
                         mes: convertToNumericMonth(mes),
                         ano: +ano
-                    })
+                    });
+
+                    id--;
                 }
 
                 return res.json(periodos);
